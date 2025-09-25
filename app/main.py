@@ -1,10 +1,14 @@
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app import models, schemas, crud, database
+from prometheus_fastapi_instrumentator import Instrumentator
 
 models.Base.metadata.create_all(bind=database.engine)
 
 app = FastAPI(title="FastAPI Docker Example")
+
+# Initialize Prometheus metrics BEFORE app starts
+Instrumentator().instrument(app).expose(app)
 
 # Dependency
 def get_db():
